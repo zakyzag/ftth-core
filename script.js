@@ -259,12 +259,6 @@ async function editJalur(id, nama, core, odp, pot, teknisi, status){
   });
 
   loadJalur();
-}}
-
-                   
-`;
-
-  });
 
 }
 
