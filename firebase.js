@@ -1,11 +1,13 @@
 const firebaseConfig = {
-  apiKey: "ISI_API_KEY",
-  authDomain: "ISI_AUTH_DOMAIN",
-  projectId: "ISI_PROJECT_ID",
-  storageBucket: "ISI_STORAGE_BUCKET",
-  messagingSenderId: "ISI_MESSAGING_SENDER_ID",
-  appId: "ISI_APP_ID"
+  apiKey: "AIzaSyA3TToQTNLjLUwXGNktHri1U--EgUwP1u0",
+  authDomain: "asrlink-fiber.firebaseapp.com",
+  projectId: "asrlink-fiber",
+  storageBucket: "asrlink-fiber.firebasestorage.app",
+  messagingSenderId: "412248138112",
+  appId: "1:412248138112:web:7e8be6884922e183252165",
+  measurementId: "G-PVSWC2WHN5"
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
