@@ -205,16 +205,26 @@ async function loadJalur(){
     }
 
     jalurTable.innerHTML += `
-      <tr>
-        <td>${no++}</td>
-        <td>${d.namaJalur}</td>
-        <td>${d.warnaCore}</td>
-        <td>${d.odp}</td>
-        <td>${d.pot}</td>
-        <td>${d.teknisi}</td>
-        <td><span class="${statusClass}">${d.status}</span></td>
-      </tr>
-    `;
+<tr>
+  <td>${no++}</td>
+  <td>${d.namaJalur}</td>
+  <td>${d.warnaCore}</td>
+  <td>${d.odp}</td>
+  <td>${d.pot}</td>
+  <td>${d.teknisi}</td>
+  <td><span class="${statusClass}">${d.status}</span></td>
+
+  <td>
+    <button onclick="editJalur('${doc.id}', '${d.namaJalur}', '${d.warnaCore}', '${d.odp}', '${d.pot}', '${d.teknisi}', '${d.status}')">
+      Edit
+    </button>
+
+    <button onclick="hapusJalur('${doc.id}')">
+      Hapus
+    </button>
+  </td>
+</tr>
+`;
   });
 }
 
