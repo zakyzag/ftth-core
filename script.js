@@ -225,6 +225,35 @@ async function loadJalur(){
   </td>
 </tr>
 `;
+
+async function hapusJalur(id){
+  await db.collection('jalur').doc(id).delete();
+  loadJalur();
+}
+
+async function editJalur(id, nama, core, odp, pot, teknisi, status){
+
+  const namaBaru = prompt('Edit Nama Jalur', nama);
+  const coreBaru = prompt('Edit Warna Core', core);
+  const odpBaru = prompt('Edit ODP', odp);
+  const potBaru = prompt('Edit POT', pot);
+  const teknisiBaru = prompt('Edit Teknisi', teknisi);
+  const statusBaru = prompt('Edit Status', status);
+
+  if(!namaBaru) return;
+
+  await db.collection('jalur').doc(id).update({
+    namaJalur: namaBaru,
+    warnaCore: coreBaru,
+    odp: odpBaru,
+    pot: potBaru,
+    teknisi: teknisiBaru,
+    status: statusBaru
+  });
+
+  loadJalur();
+}
+    
   });
 }
 
