@@ -226,8 +226,10 @@ async function loadJalur(){
 </tr>
 `;
 
-async function hapusJalur(id){
+async async function hapusJalur(id){
+
   await db.collection('jalur').doc(id).delete();
+
   loadJalur();
 }
 
@@ -243,12 +245,14 @@ async function editJalur(id, nama, core, odp, pot, teknisi, status){
   if(!namaBaru) return;
 
   await db.collection('jalur').doc(id).update({
+
     namaJalur: namaBaru,
     warnaCore: coreBaru,
     odp: odpBaru,
     pot: potBaru,
     teknisi: teknisiBaru,
     status: statusBaru
+
   });
 
   loadJalur();
