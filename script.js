@@ -225,8 +225,11 @@ async function loadJalur(){
   </td>
 </tr>
 `;
+    });
 
-async async function hapusJalur(id){
+}
+
+async function hapusJalur(id){
 
   await db.collection('jalur').doc(id).delete();
 
@@ -256,9 +259,13 @@ async function editJalur(id, nama, core, odp, pot, teknisi, status){
   });
 
   loadJalur();
-}
-    
+}}
+
+                   
+`;
+
   });
+
 }
 
 // =====================
