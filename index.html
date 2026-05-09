@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard FTTH</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>FTTH PANEL</h2>
+
+  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('pelanggan')">Pelanggan</button>
+  <button onclick="showSection('odp')">Data ODP</button>
+  <button onclick="showSection('gangguan')">Gangguan</button>
+  <button onclick="showSection('teknisi')">Teknisi</button>
+</div>
+
+<div class="main">
+
+  <div id="dashboard" class="section active">
+    <h1>Dashboard Monitoring Jalur FTTH</h1>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Total Pelanggan</h3>
+        <p id="totalPelanggan">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Total ODP</h3>
+        <p id="totalODP">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Gangguan</h3>
+        <p id="totalGangguan">0</p>
+      </div>
+    </div>
+
+    <div class="jalur-box">
+      <h2>Data Jalur FTTH</h2>
+
+      <form id="jalurForm">
+        <input type="text" id="namaJalur" placeholder="Nama Jalur" required>
+
+        <select id="warnaCore" required>
+          <option value="">Pilih Warna Core</option>
+          <option value="Biru">Biru</option>
+          <option value="Orange">Orange</option>
+          <option value="Hijau">Hijau</option>
+          <option value="Coklat">Coklat</option>
+          <option value="Abu">Abu</option>
+          <option value="Putih">Putih</option>
+          <option value="Merah">Merah</option>
+          <option value="Hitam">Hitam</option>
+        </select>
+
+        <input type="text" id="odpJalur" placeholder="ODP" required>
+        <input type="text" id="potJalur" placeholder="POT" required>
+        <input type="text" id="teknisiJalur" placeholder="Teknisi" required>
+
+        <select id="statusJalur" required>
+          <option value="">Status Jalur</option>
+          <option value="Active">Active</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Putus">Putus</option>
+        </select>
+
+        <button type="submit">Tambah Jalur</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Jalur</th>
+            <th>Warna Core</th>
+            <th>ODP</th>
+            <th>POT</th>
+            <th>Teknisi</th>
+            <th>Status Jalur</th>
+          </tr>
+        </thead>
+
+        <tbody id="jalurTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+  </div>
+
+  <div id="pelanggan" class="section">
+    <h1>Data Pelanggan</h1>
+
+    <form id="pelangganForm">
+      <input type="text" id="nama" placeholder="Nama Pelanggan" required>
+      <input type="text" id="alamat" placeholder="Alamat" required>
+      <input type="text" id="paket" placeholder="Paket Internet" required>
+      <button type="submit">Tambah</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Alamat</th>
+          <th>Paket</th>
+        </tr>
+      </thead>
+      <tbody id="pelangganTable"></tbody>
+    </table>
+  </div>
+
+  <div id="odp" class="section">
+    <h1>Data ODP</h1>
+
+    <form id="odpForm">
+      <input type="text" id="namaOdp" placeholder="Nama ODP" required>
+      <input type="text" id="core" placeholder="Core" required>
+      <input type="text" id="status" placeholder="Status" required>
+      <button type="submit">Tambah</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ODP</th>
+          <th>Core</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="odpTable"></tbody>
+    </table>
+  </div>
+
+  <div id="gangguan" class="section">
+    <h1>Data Gangguan</h1>
+
+    <form id="gangguanForm">
+      <input type="text" id="lokasiGangguan" placeholder="Lokasi" required>
+      <input type="text" id="jenisGangguan" placeholder="Jenis Gangguan" required>
+      <button type="submit">Tambah</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Lokasi</th>
+          <th>Gangguan</th>
+        </tr>
+      </thead>
+      <tbody id="gangguanTable"></tbody>
+    </table>
+  </div>
+
+  <div id="teknisi" class="section">
+    <h1>Data Teknisi</h1>
+
+    <form id="teknisiForm">
+      <input type="text" id="namaTeknisi" placeholder="Nama Teknisi" required>
+      <input type="text" id="jobTeknisi" placeholder="Pekerjaan" required>
+      <button type="submit">Tambah</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Pekerjaan</th>
+        </tr>
+      </thead>
+      <tbody id="teknisiTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
