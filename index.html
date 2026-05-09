@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Jaringan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>ASRILINK - Dashboard Jaringan</h1>
+
+    <div class="form-box">
+      <input type="text" id="nama" placeholder="Nama Pelanggan">
+      <input type="text" id="ip" placeholder="IP Address">
+      <input type="text" id="lokasi" placeholder="Lokasi">
+      <button onclick="tambahData()">Tambah Data</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>IP Address</th>
+          <th>Lokasi</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="dataJaringan">
+      </tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
