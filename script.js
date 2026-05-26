@@ -277,3 +277,8 @@ loadODP();
 loadGangguan();
 loadTeknisi();
 loadJalur();
+
+window.hapusPelanggan = async function(id) {
+  await db.collection('pelanggan').doc(id).delete();
+  loadPelanggan();
+}
