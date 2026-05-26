@@ -1,9 +1,16 @@
 function showSection(id) {
+
   document.querySelectorAll('.section').forEach(section => {
     section.classList.remove('active');
   });
 
   document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.menu button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  event.target.classList.add('active');
 }
 
 // =====================
