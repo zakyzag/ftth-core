@@ -402,3 +402,66 @@ h2 {
   background: linear-gradient(135deg,#2563eb,#7c3aed);
   color: white;
 }
+
+.welcome-box{
+  background: linear-gradient(135deg,#111827,#1d4ed8);
+  border-radius: 25px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+.welcome-box p{
+  color:#cbd5e1;
+  margin-bottom:10px;
+}
+
+.welcome-box h2{
+  font-size:35px;
+  margin-bottom:10px;
+}
+
+.welcome-box span{
+  color:#94a3b8;
+}
+
+.sidebar{
+  width:240px;
+}
+
+.main{
+  width:100%;
+}
+
+@media(max-width:768px){
+
+  .app{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+  }
+
+  .menu{
+    display:flex;
+    overflow:auto;
+    gap:10px;
+    margin-top:15px;
+  }
+
+  .menu button{
+    min-width:120px;
+  }
+
+  .main{
+    padding:15px;
+  }
+
+  table{
+    font-size:12px;
+  }
+
+}
