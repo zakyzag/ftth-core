@@ -13,11 +13,12 @@
   
 </head>
 <body>
+<div class="app">
 
 <div class="sidebar">
   <h2>FTTH PANEL</h2>
 
-  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button class="active" onclick="showSection('dashboard')">
   <button onclick="showSection('pelanggan')">Pelanggan</button>
   <button onclick="showSection('odp')">Data ODP</button>
   <button onclick="showSection('gangguan')">Gangguan</button>
@@ -29,18 +30,18 @@
   <div id="dashboard" class="section active">
     <h1>Dashboard Monitoring Jalur FTTH</h1>
 
-    <div class="cards">
-      <div class="card">
+    <div class="stats">
+      <div class="stats">
         <h3>Total Pelanggan</h3>
         <p id="totalPelanggan">0</p>
       </div>
 
-      <div class="card">
+      <div class="stats">
         <h3>Total ODP</h3>
         <p id="totalODP">0</p>
       </div>
 
-      <div class="card">
+      <div class="stats">
         <h3>Gangguan</h3>
         <p id="totalGangguan">0</p>
       </div>
@@ -109,6 +110,7 @@
       <button type="submit">Tambah</button>
     </form>
 
+    <div class="table-container">
     <table>
       <thead>
         <tr>
@@ -132,6 +134,8 @@
       <button type="submit">Tambah</button>
     </form>
 
+    
+    <div class="table-container">
     <table>
       <thead>
         <tr>
@@ -153,6 +157,8 @@
       <button type="submit">Tambah</button>
     </form>
 
+    
+    <div class="table-container">
     <table>
       <thead>
         <tr>
@@ -173,6 +179,8 @@
       <button type="submit">Tambah</button>
     </form>
 
+  
+  <div class="table-container">
     <table>
       <thead>
         <tr>
@@ -184,6 +192,7 @@
     </table>
   </div>
 
+</div>
 </div>
 
 <script src="firebase.js"></script>
