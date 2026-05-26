@@ -1,16 +1,20 @@
-function showSection(id) {
+function showSection(id, element) {
 
+  // sembunyikan semua section
   document.querySelectorAll('.section').forEach(section => {
-    section.classList.remove('active');
+    section.style.display = 'none';
   });
 
-  document.getElementById(id).classList.add('active');
+  // tampilkan section dipilih
+  document.getElementById(id).style.display = 'block';
 
+  // hapus active semua tombol
   document.querySelectorAll('.menu button').forEach(btn => {
     btn.classList.remove('active');
   });
 
-  event.target.classList.add('active');
+  // active tombol diklik
+  element.classList.add('active');
 }
 
 // =====================
