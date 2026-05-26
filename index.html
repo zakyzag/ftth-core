@@ -29,24 +29,28 @@
     </div>
 
     <div class="menu">
-      <button onclick="showSection('dashboard')"
-        class="active">Dashboard</button>
 
-      <button onclick="showSection('pelanggan')">
-        Pelanggan
-      </button>
+  <button class="active"
+    onclick="showSection('dashboard', this)">
+    Dashboard
+  </button>
 
-      <button onclick="showSection('odp')">
-        Data ODP
-      </button>
+  <button onclick="showSection('pelanggan', this)">
+    Pelanggan
+  </button>
 
-      <button onclick="showSection('gangguan')">
-        Gangguan
-      </button>
+  <button onclick="showSection('odp', this)">
+    Data ODP
+  </button>
 
-      <button onclick="showSection('teknisi')">
-        Teknisi
-      </button>
+  <button onclick="showSection('gangguan', this)">
+    Gangguan
+  </button>
+
+  <button onclick="showSection('teknisi', this)">
+    Teknisi
+  </button>
+
     </div>
 
   </div>
@@ -55,7 +59,7 @@
 
 <div class="main">
 
-  <div id="dashboard" class="section active">
+  <div id="dashboard" class="section">
     <h1>Dashboard Monitoring Jalur FTTH</h1>
     <div class="welcome-box">
   
@@ -133,12 +137,9 @@
         <tbody id="jalurTable"></tbody>
       </table>
     </div>
-  </div>
+    </div>
 
-</div>
-  </div>
-
-  <div id="pelanggan" class="section">
+    <div id="pelanggan" class="section">
     <h1>Data Pelanggan</h1>
 
     <form id="pelangganForm">
@@ -162,7 +163,7 @@
     </table>
   </div>
 
-  <div id="odp"class ="section">
+  <div id="odp" class="section">
     <h1>Data ODP</h1>
 
     <form id="odpForm">
