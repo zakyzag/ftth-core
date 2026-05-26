@@ -465,3 +465,11 @@ h2 {
   }
 
 }
+
+.section{
+  display:none;
+}
+
+#dashboard{
+  display:block;
+}
