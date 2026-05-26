@@ -34,16 +34,22 @@ async function loadPelanggan() {
   document.getElementById('totalPelanggan').innerText = snapshot.size;
 
   snapshot.forEach(doc => {
-    const d = doc.data();
+  const d = doc.data();
 
-    pelangganTable.innerHTML += `
-      <tr>
-        <td>${d.nama}</td>
-        <td>${d.alamat}</td>
-        <td>${d.paket}</td>
-      </tr>
-    `;
-  });
+  pelangganTable.innerHTML += `
+    <tr>
+      <td>${d.nama}</td>
+      <td>${d.alamat}</td>
+      <td>${d.paket}</td>
+
+      <td>
+        <button onclick="hapusPelanggan('${doc.id}')">
+          Hapus
+        </button>
+      </td>
+    </tr>
+  `;
+});
 }
 
 // =====================
