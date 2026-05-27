@@ -536,3 +536,86 @@ h2 {
   }
 
 }
+
+@media screen and (max-width: 768px) {
+
+  .app{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+    padding:15px;
+    border-radius:0 0 20px 20px;
+  }
+
+  .main{
+    width:100%;
+    margin-left:0;
+    padding:10px;
+  }
+
+  .menu{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding-bottom:10px;
+  }
+
+  .menu button{
+    min-width:110px;
+    flex-shrink:0;
+  }
+
+  .welcome-box{
+    padding:20px;
+  }
+
+  .stats-container{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+  .jalur-box,
+  .section{
+    width:100%;
+    overflow:hidden;
+  }
+
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  form input,
+  form select,
+  form button{
+    width:100%;
+  }
+
+  .table-container{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  table{
+    min-width:1000px;
+  }
+
+  th, td{
+    font-size:12px;
+    padding:10px;
+    white-space:nowrap;
+  }
+
+  h1{
+    font-size:26px;
+  }
+
+}
