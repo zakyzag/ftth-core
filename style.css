@@ -618,4 +618,8 @@ h2 {
     font-size:26px;
   }
 
+  .main{
+  overflow:hidden;
+  }
+
 }
