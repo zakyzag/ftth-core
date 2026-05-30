@@ -81,23 +81,21 @@ appId: "1:412248138112:web:7e8be6884922e183252165"
 firebase.initializeApp(firebaseConfig);
 
 function login(){
-
-const email =
-document.getElementById("email").value;
-
+const email =document.getElementById("email").value;
 const password =
 document.getElementById("password").value;
 
 firebase.auth()
 .signInWithEmailAndPassword(email,password)
-
 .then(()=>{
-
 window.location.href="index.html";
-
 })
 
 .catch((error)=>{
+  alert(eror.message);
+});
+
+}
 
 document.getElementById("status")
 .innerHTML = error.message;
