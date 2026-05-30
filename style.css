@@ -528,7 +528,7 @@ h2 {
   }
 
   table {
-    min-width: 900px;
+    min-width:100%;
   }
 
   h1 {
@@ -556,6 +556,7 @@ h2 {
     width:100%;
     margin-left:0;
     padding:10px;
+    overflow-x:hideen;
   }
 
   .menu{
@@ -605,7 +606,8 @@ h2 {
   }
 
   table{
-    min-width:1000px;
+    width:100%;
+    min-width:0;
   }
 
   th, td{
@@ -619,7 +621,7 @@ h2 {
   }
 
   .main{
-  overflow:hidden;
+  overflow-x:auto;
   }
   
 .logout-btn{
