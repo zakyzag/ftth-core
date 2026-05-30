@@ -103,9 +103,17 @@ async function loadODP() {
         <td>${d.nama}</td>
         <td>${d.core}</td>
         <td>${d.status}</td>
+        <td>
+          <button onclick="hapusODP('${doc.id}')">Hapus</button>
+        </td>
       </tr>
     `;
   });
+}
+
+window.hapusODP = async function(id) {
+  await db.collection('odp').doc(id).delete();
+  loadODP();
 }
 
 // =====================
@@ -142,9 +150,17 @@ async function loadGangguan() {
       <tr>
         <td>${d.lokasi}</td>
         <td>${d.jenis}</td>
+        <td>
+          <button onclick="hapusGangguan('${doc.id}')">Hapus</button>
+        </td>
       </tr>
     `;
   });
+}
+
+window.hapusGangguan = async function(id) {
+  await db.collection('gangguan').doc(id).delete();
+  loadGangguan();
 }
 
 // =====================
@@ -179,9 +195,17 @@ async function loadTeknisi() {
       <tr>
         <td>${d.nama}</td>
         <td>${d.pekerjaan}</td>
+        <td>
+          <button onclick="hapusTeknisi('${doc.id}')">Hapus</button>
+        </td>
       </tr>
     `;
   });
+}
+
+window.hapusTeknisi = async function(id) {
+  await db.collection('teknisi').doc(id).delete();
+  loadTeknisi();
 }
 
 // =====================
@@ -292,4 +316,3 @@ loadODP();
 loadGangguan();
 loadTeknisi();
 loadJalur();
-
