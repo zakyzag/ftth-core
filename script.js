@@ -435,3 +435,32 @@ window.hapusODPWilayah = async function(id, wilayah) {
   await db.collection('odp_' + wilayah).doc(id).delete();
   loadODPWilayah(wilayah);
 }
+
+// =====================
+// SALAM REALTIME
+// =====================
+
+function updateSalam() {
+  const jam = new Date().getHours();
+  let salam = '';
+
+  if (jam >= 5 && jam < 12) {
+    salam = '🌅 Hai selamat pagi';
+  } else if (jam >= 12 && jam < 15) {
+    salam = '☀️ Hai selamat siang';
+  } else if (jam >= 15 && jam < 18) {
+    salam = '🌆 Hai selamat sore';
+  } else {
+    salam = '🌙 Hai selamat malam';
+  }
+
+  const el = document.querySelector('.profile-card h3');
+  if (el) el.innerText = salam;
+}
+
+// Jalankan saat halaman load
+updateSalam();
+
+// Update otomatis setiap 1 menit
+setInterval(updateSalam, 60000);
+
