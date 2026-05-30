@@ -189,8 +189,8 @@ async function loadTeknisi() {
 // LOGOUT
 //=====================
 funcion logout()
- firebase.auth()
-  window.location.href= "login.html"
+ firebase.auth().signOut().then(()=>{
+  window.location.href= "login.html";
 });
 }
 // =====================
