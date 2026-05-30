@@ -1,3 +1,13 @@
+firebase.auth().onAuthStateChanged((user)=>{
+
+if(!user){
+
+window.location.href="login.html";
+
+}
+
+});
+
 function showSection(id, element) {
 
   // sembunyikan semua section
