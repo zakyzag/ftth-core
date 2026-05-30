@@ -184,9 +184,11 @@
       <h1 id="odpWilayahTitle">Data ODP</h1>
 
       <form id="odpWilayahForm">
-        <input type="text" id="namaOdpW" placeholder="Nama ODP" required>
-        <input type="text" id="coreOdpW" placeholder="Core" required>
-        <input type="text" id="statusOdpW" placeholder="Status" required>
+        <input type="text" id="odcOdpW" placeholder="ODC" required>
+        <input type="text" id="namaOdpW" placeholder="ODP" required>
+        <input type="number" id="portSisaOdpW" placeholder="Port Sisa" required min="0">
+        <input type="text" id="latOdpW" placeholder="Latitude (contoh: -7.123456)" required>
+        <input type="text" id="lngOdpW" placeholder="Longitude (contoh: 110.123456)" required>
         <button type="submit">Tambah</button>
       </form>
 
@@ -194,9 +196,10 @@
         <table>
           <thead>
             <tr>
+              <th>ODC</th>
               <th>ODP</th>
-              <th>Core</th>
-              <th>Status</th>
+              <th>Port Sisa</th>
+              <th>Map ODP</th>
               <th>Aksi</th>
             </tr>
           </thead>
