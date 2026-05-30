@@ -1,3 +1,39 @@
+// =====================
+// SISTEM ROLE ADMIN & VIEWER
+// =====================
+// Tambahkan kode ini di paling ATAS script.js, sebelum kode lainnya
+
+const userRole = sessionStorage.getItem("userRole") || "viewer";
+
+function applyRoleAccess() {
+  if (userRole === "viewer") {
+    // Sembunyikan semua form tambah data
+    document.querySelectorAll("form").forEach(form => {
+      form.style.display = "none";
+    });
+
+    // Sembunyikan kolom Aksi di semua tabel (hapus/edit)
+    const style = document.createElement("style");
+    style.innerHTML = `
+      th:last-child, td:last-child { display: none !important; }
+    `;
+    document.head.appendChild(style);
+
+    // Tampilkan badge viewer di profile card
+    const profileCard = document.querySelector(".profile-card");
+    if (profileCard) {
+      const badge = document.createElement("span");
+      badge.innerText = "👁️ Mode Viewer";
+      badge.style.cssText = "font-size:12px;background:rgba(234,179,8,0.2);color:#facc15;padding:4px 10px;border-radius:20px;display:inline-block;margin-top:6px;";
+      profileCard.appendChild(badge);
+    }
+  }
+}
+
+// Jalankan setelah halaman siap
+document.addEventListener("DOMContentLoaded", applyRoleAccess);
+
+
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
     window.location.href = "login.html";
