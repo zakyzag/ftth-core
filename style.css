@@ -621,7 +621,7 @@ h2 {
   }
 
   .main{
-  overflow-x:auto;
+  overflow-x:hidden;
   }
   
 .logout-btn{
