@@ -316,3 +316,122 @@ loadODP();
 loadGangguan();
 loadTeknisi();
 loadJalur();
+
+// =====================
+// ODP WILAYAH - FUNGSI BARU
+// =====================
+
+// Nama wilayah yang tampil di judul
+const wilayahLabels = {
+  tambahrejo: 'Tambahrejo',
+  pondok: 'Pondok',
+  brumbung: 'Brumbung',
+  randutelu: 'Randutelu',
+  ploso: 'Ploso',
+  sembung: 'Sembung',
+  mangunreja: 'Mangunreja',
+  mojopahit: 'Mojopahit',
+  pojok: 'Pojok',
+  bogo: 'Bogo',
+  karangtengah: 'Karang Tengah',
+  karangmalang: 'Karang Malang',
+  sempu: 'Sempu',
+  nambangan: 'Nambangan',
+  gebang: 'Gebang',
+  kalirejo: 'Kalirejo',
+  metok: 'Metok',
+  bandang: 'Bandang',
+  piton: 'Piton',
+  tanjungsari: 'Tanjungsari'
+};
+
+let currentWilayah = null;
+let odpWilayahFormListener = null;
+
+function toggleOdpMenu(btn) {
+  const submenu = document.getElementById('odpSubmenu');
+  const isOpen = submenu.classList.contains('open');
+
+  submenu.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+function showOdpWilayah(wilayah, element) {
+  // Sembunyikan semua section
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+
+  // Tampilkan section odp-wilayah
+  document.getElementById('odp-wilayah').style.display = 'block';
+
+  // Update judul
+  document.getElementById('odpWilayahTitle').innerText =
+    'Data ODP - Wilayah ' + wilayahLabels[wilayah];
+
+  // Hapus active dari semua tombol menu utama
+  document.querySelectorAll('.menu > button').forEach(btn => btn.classList.remove('active'));
+
+  // Set active pada tombol toggle ODP
+  document.querySelector('.odp-toggle').classList.add('active');
+
+  // Set active pada wilayah yang dipilih di submenu
+  document.querySelectorAll('.odp-submenu button').forEach(btn => btn.classList.remove('active'));
+  element.classList.add('active');
+
+  // Simpan wilayah aktif
+  currentWilayah = wilayah;
+
+  // Load data wilayah ini
+  loadODPWilayah(wilayah);
+
+  // Reset dan pasang ulang form listener
+  const form = document.getElementById('odpWilayahForm');
+  const newForm = form.cloneNode(true);
+  form.parentNode.replaceChild(newForm, form);
+
+  document.getElementById('odpWilayahForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+      nama: document.getElementById('namaOdpW').value,
+      core: document.getElementById('coreOdpW').value,
+      status: document.getElementById('statusOdpW').value,
+      wilayah: wilayah
+    };
+    await db.collection('odp_' + wilayah).add(data);
+    document.getElementById('odpWilayahForm').reset();
+    loadODPWilayah(wilayah);
+  });
+}
+
+async function loadODPWilayah(wilayah) {
+  const table = document.getElementById('odpWilayahTable');
+  table.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#94a3b8">Memuat data...</td></tr>';
+
+  const snapshot = await db.collection('odp_' + wilayah).get();
+
+  table.innerHTML = '';
+
+  if (snapshot.empty) {
+    table.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#94a3b8">Belum ada data ODP untuk wilayah ini.</td></tr>';
+    return;
+  }
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    table.innerHTML += `
+      <tr>
+        <td>${d.nama}</td>
+        <td>${d.core}</td>
+        <td>${d.status}</td>
+        <td>
+          <button onclick="hapusODPWilayah('${doc.id}', '${wilayah}')">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+window.hapusODPWilayah = async function(id, wilayah) {
+  if (!confirm('Yakin hapus data ini?')) return;
+  await db.collection('odp_' + wilayah).doc(id).delete();
+  loadODPWilayah(wilayah);
+}
