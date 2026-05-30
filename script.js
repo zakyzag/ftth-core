@@ -187,6 +187,14 @@ async function loadTeknisi() {
   });
 }
 
+//=====================
+// LOGOUT
+//=====================
+funcion logout()
+ firebase.auth()
+  window.location.href= "login.html"
+});
+}
 // =====================
 // DATA JALUR FTTH
 // =====================
