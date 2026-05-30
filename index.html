@@ -32,7 +32,37 @@
       <div class="menu">
         <button class="active" onclick="showSection('dashboard', this)">Dashboard</button>
         <button onclick="showSection('pelanggan', this)">Pelanggan</button>
-        <button onclick="showSection('odp', this)">Data ODP</button>
+
+        <!-- DATA ODP DROPDOWN -->
+        <div class="odp-menu-wrapper">
+          <button class="odp-toggle" onclick="toggleOdpMenu(this)">
+            Data ODP <span class="arrow">▾</span>
+          </button>
+          <div class="odp-submenu" id="odpSubmenu">
+            <button onclick="showOdpWilayah('tambahrejo', this)">Wilayah Tambahrejo</button>
+            <button onclick="showOdpWilayah('pondok', this)">Wilayah Pondok</button>
+            <button onclick="showOdpWilayah('brumbung', this)">Wilayah Brumbung</button>
+            <button onclick="showOdpWilayah('randutelu', this)">Wilayah Randutelu</button>
+            <button onclick="showOdpWilayah('ploso', this)">Wilayah Ploso</button>
+            <button onclick="showOdpWilayah('sembung', this)">Wilayah Sembung</button>
+            <button onclick="showOdpWilayah('mangunreja', this)">Wilayah Mangunreja</button>
+            <button onclick="showOdpWilayah('mojopahit', this)">Wilayah Mojopahit</button>
+            <button onclick="showOdpWilayah('pojok', this)">Wilayah Pojok</button>
+            <button onclick="showOdpWilayah('bogo', this)">Wilayah Bogo</button>
+            <button onclick="showOdpWilayah('karangtengah', this)">Wilayah Karang Tengah</button>
+            <button onclick="showOdpWilayah('karangmalang', this)">Wilayah Karang Malang</button>
+            <button onclick="showOdpWilayah('sempu', this)">Wilayah Sempu</button>
+            <button onclick="showOdpWilayah('nambangan', this)">Wilayah Nambangan</button>
+            <button onclick="showOdpWilayah('gebang', this)">Wilayah Gebang</button>
+            <button onclick="showOdpWilayah('kalirejo', this)">Wilayah Kalirejo</button>
+            <button onclick="showOdpWilayah('metok', this)">Wilayah Metok</button>
+            <button onclick="showOdpWilayah('bandang', this)">Wilayah Bandang</button>
+            <button onclick="showOdpWilayah('piton', this)">Wilayah Piton</button>
+            <button onclick="showOdpWilayah('tanjungsari', this)">Wilayah Tanjungsari</button>
+          </div>
+        </div>
+        <!-- END DATA ODP DROPDOWN -->
+
         <button onclick="showSection('gangguan', this)">Gangguan</button>
         <button onclick="showSection('teknisi', this)">Teknisi</button>
       </div>
@@ -149,7 +179,34 @@
     </div>
     <!-- END PELANGGAN -->
 
-    <!-- ODP -->
+    <!-- ODP WILAYAH - satu section dinamis dipakai semua wilayah -->
+    <div id="odp-wilayah" class="section">
+      <h1 id="odpWilayahTitle">Data ODP</h1>
+
+      <form id="odpWilayahForm">
+        <input type="text" id="namaOdpW" placeholder="Nama ODP" required>
+        <input type="text" id="coreOdpW" placeholder="Core" required>
+        <input type="text" id="statusOdpW" placeholder="Status" required>
+        <button type="submit">Tambah</button>
+      </form>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ODP</th>
+              <th>Core</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="odpWilayahTable"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- END ODP WILAYAH -->
+
+    <!-- ODP (lama, tetap ada untuk kompatibilitas) -->
     <div id="odp" class="section">
       <h1>Data ODP</h1>
 
