@@ -1,29 +1,20 @@
-alert("script jalan");
-
-firebase.auth().onAuthStateChanged((user)=>{
-
-if(!user){
-window.location.href="login.html";
-}
-
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  }
 });
 
 function showSection(id, element) {
-
-  // sembunyikan semua section
   document.querySelectorAll('.section').forEach(section => {
     section.style.display = 'none';
   });
 
-  // tampilkan section dipilih
   document.getElementById(id).style.display = 'block';
 
-  // hapus active semua tombol
   document.querySelectorAll('.menu button').forEach(btn => {
     btn.classList.remove('active');
   });
 
-  // active tombol diklik
   element.classList.add('active');
 }
 
@@ -45,6 +36,7 @@ pelangganForm.addEventListener('submit', async (e) => {
 
   await db.collection('pelanggan').add(data);
   pelangganForm.reset();
+  loadPelanggan();
 });
 
 async function loadPelanggan() {
@@ -55,22 +47,24 @@ async function loadPelanggan() {
   document.getElementById('totalPelanggan').innerText = snapshot.size;
 
   snapshot.forEach(doc => {
-  const d = doc.data();
+    const d = doc.data();
 
-  pelangganTable.innerHTML += `
-    <tr>
-      <td>${d.nama}</td>
-      <td>${d.alamat}</td>
-      <td>${d.paket}</td>
+    pelangganTable.innerHTML += `
+      <tr>
+        <td>${d.nama}</td>
+        <td>${d.alamat}</td>
+        <td>${d.paket}</td>
+        <td>
+          <button onclick="hapusPelanggan('${doc.id}')">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
 
-      <td>
-        <button onclick="hapusPelanggan('${doc.id}')">
-          Hapus
-        </button>
-      </td>
-    </tr>
-  `;
-});
+window.hapusPelanggan = async function(id) {
+  await db.collection('pelanggan').doc(id).delete();
+  loadPelanggan();
 }
 
 // =====================
@@ -91,6 +85,7 @@ odpForm.addEventListener('submit', async (e) => {
 
   await db.collection('odp').add(data);
   odpForm.reset();
+  loadODP();
 });
 
 async function loadODP() {
@@ -120,7 +115,7 @@ async function loadODP() {
 const gangguanForm = document.getElementById('gangguanForm');
 const gangguanTable = document.getElementById('gangguanTable');
 
- gangguanForm.addEventListener('submit', async (e) => {
+gangguanForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const data = {
@@ -130,6 +125,7 @@ const gangguanTable = document.getElementById('gangguanTable');
 
   await db.collection('gangguan').add(data);
   gangguanForm.reset();
+  loadGangguan();
 });
 
 async function loadGangguan() {
@@ -168,6 +164,7 @@ teknisiForm.addEventListener('submit', async (e) => {
 
   await db.collection('teknisi').add(data);
   teknisiForm.reset();
+  loadTeknisi();
 });
 
 async function loadTeknisi() {
@@ -187,14 +184,16 @@ async function loadTeknisi() {
   });
 }
 
-//=====================
+// =====================
 // LOGOUT
-//=====================
-function logout()
- firebase.auth().signOut().then(()=>{
-  window.location.href= "login.html";
-});
+// =====================
+
+function logout() {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "login.html";
+  });
 }
+
 // =====================
 // DATA JALUR FTTH
 // =====================
@@ -202,7 +201,7 @@ function logout()
 const jalurForm = document.getElementById('jalurForm');
 const jalurTable = document.getElementById('jalurTable');
 
-jalurForm.addEventListener('submit', async (e)=>{
+jalurForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const data = {
@@ -219,60 +218,50 @@ jalurForm.addEventListener('submit', async (e)=>{
   loadJalur();
 });
 
-async function loadJalur(){
-  jalurTable.innerHTML='';
+async function loadJalur() {
+  jalurTable.innerHTML = '';
 
   const snapshot = await db.collection('jalur').get();
 
   let no = 1;
 
-  snapshot.forEach(doc=>{
+  snapshot.forEach(doc => {
     const d = doc.data();
 
     let statusClass = '';
 
-    if(d.status === 'Active'){
+    if (d.status === 'Active') {
       statusClass = 'status-active';
-    }else if(d.status === 'Maintenance'){
+    } else if (d.status === 'Maintenance') {
       statusClass = 'status-maintenance';
-    }else{
+    } else {
       statusClass = 'status-putus';
     }
 
     jalurTable.innerHTML += `
-<tr>
-  <td>${no++}</td>
-  <td>${d.namaJalur}</td>
-  <td>${d.warnaCore}</td>
-  <td>${d.odp}</td>
-  <td>${d.pot}</td>
-  <td>${d.teknisi}</td>
-  <td><span class="${statusClass}">${d.status}</span></td>
-
-  <td>
-    <button onclick="editJalur('${doc.id}', '${d.namaJalur}', '${d.warnaCore}', '${d.odp}', '${d.pot}', '${d.teknisi}', '${d.status}')">
-      Edit
-    </button>
-
-    <button onclick="hapusJalur('${doc.id}')">
-      Hapus
-    </button>
-  </td>
-</tr>
-`;
-    });
-
+      <tr>
+        <td>${no++}</td>
+        <td>${d.namaJalur}</td>
+        <td>${d.warnaCore}</td>
+        <td>${d.odp}</td>
+        <td>${d.pot}</td>
+        <td>${d.teknisi}</td>
+        <td><span class="${statusClass}">${d.status}</span></td>
+        <td>
+          <button onclick="editJalur('${doc.id}', '${d.namaJalur}', '${d.warnaCore}', '${d.odp}', '${d.pot}', '${d.teknisi}', '${d.status}')">Edit</button>
+          <button onclick="hapusJalur('${doc.id}')">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
 }
 
-async function hapusJalur(id){
-
+async function hapusJalur(id) {
   await db.collection('jalur').doc(id).delete();
-
   loadJalur();
 }
 
-async function editJalur(id, nama, core, odp, pot, teknisi, status){
-
+async function editJalur(id, nama, core, odp, pot, teknisi, status) {
   const namaBaru = prompt('Edit Nama Jalur', nama);
   const coreBaru = prompt('Edit Warna Core', core);
   const odpBaru = prompt('Edit ODP', odp);
@@ -280,21 +269,18 @@ async function editJalur(id, nama, core, odp, pot, teknisi, status){
   const teknisiBaru = prompt('Edit Teknisi', teknisi);
   const statusBaru = prompt('Edit Status', status);
 
-  if(!namaBaru) return;
+  if (!namaBaru) return;
 
   await db.collection('jalur').doc(id).update({
-
     namaJalur: namaBaru,
     warnaCore: coreBaru,
     odp: odpBaru,
     pot: potBaru,
     teknisi: teknisiBaru,
     status: statusBaru
-
   });
 
   loadJalur();
-
 }
 
 // =====================
@@ -307,7 +293,3 @@ loadGangguan();
 loadTeknisi();
 loadJalur();
 
-window.hapusPelanggan = async function(id) {
-  await db.collection('pelanggan').doc(id).delete();
-  loadPelanggan();
-}
