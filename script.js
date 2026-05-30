@@ -19,151 +19,6 @@ function showSection(id, element) {
 }
 
 // =====================
-// DATA PELANGGAN
-// =====================
-
-const pelangganForm = document.getElementById('pelangganForm');
-const pelangganTable = document.getElementById('pelangganTable');
-
-pelangganForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const data = {
-    nama: nama.value,
-    alamat: alamat.value,
-    paket: paket.value
-  };
-
-  await db.collection('pelanggan').add(data);
-  pelangganForm.reset();
-  loadPelanggan();
-});
-
-async function loadPelanggan() {
-  pelangganTable.innerHTML = '';
-
-  const snapshot = await db.collection('pelanggan').get();
-
-  document.getElementById('totalPelanggan').innerText = snapshot.size;
-
-  snapshot.forEach(doc => {
-    const d = doc.data();
-
-    pelangganTable.innerHTML += `
-      <tr>
-        <td>${d.nama}</td>
-        <td>${d.alamat}</td>
-        <td>${d.paket}</td>
-        <td>
-          <button onclick="hapusPelanggan('${doc.id}')">Hapus</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-window.hapusPelanggan = async function(id) {
-  await db.collection('pelanggan').doc(id).delete();
-  loadPelanggan();
-}
-
-// =====================
-// DATA ODP
-// =====================
-
-const odpForm = document.getElementById('odpForm');
-const odpTable = document.getElementById('odpTable');
-
-odpForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const data = {
-    nama: namaOdp.value,
-    core: core.value,
-    status: status.value
-  };
-
-  await db.collection('odp').add(data);
-  odpForm.reset();
-  loadODP();
-});
-
-async function loadODP() {
-  odpTable.innerHTML = '';
-
-  const snapshot = await db.collection('odp').get();
-
-  document.getElementById('totalODP').innerText = snapshot.size;
-
-  snapshot.forEach(doc => {
-    const d = doc.data();
-
-    odpTable.innerHTML += `
-      <tr>
-        <td>${d.nama}</td>
-        <td>${d.core}</td>
-        <td>${d.status}</td>
-        <td>
-          <button onclick="hapusODP('${doc.id}')">Hapus</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-window.hapusODP = async function(id) {
-  await db.collection('odp').doc(id).delete();
-  loadODP();
-}
-
-// =====================
-// GANGGUAN
-// =====================
-
-const gangguanForm = document.getElementById('gangguanForm');
-const gangguanTable = document.getElementById('gangguanTable');
-
-gangguanForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const data = {
-    lokasi: lokasiGangguan.value,
-    jenis: jenisGangguan.value
-  };
-
-  await db.collection('gangguan').add(data);
-  gangguanForm.reset();
-  loadGangguan();
-});
-
-async function loadGangguan() {
-  gangguanTable.innerHTML = '';
-
-  const snapshot = await db.collection('gangguan').get();
-
-  document.getElementById('totalGangguan').innerText = snapshot.size;
-
-  snapshot.forEach(doc => {
-    const d = doc.data();
-
-    gangguanTable.innerHTML += `
-      <tr>
-        <td>${d.lokasi}</td>
-        <td>${d.jenis}</td>
-        <td>
-          <button onclick="hapusGangguan('${doc.id}')">Hapus</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-window.hapusGangguan = async function(id) {
-  await db.collection('gangguan').doc(id).delete();
-  loadGangguan();
-}
-
-// =====================
 // TEKNISI
 // =====================
 
@@ -311,14 +166,11 @@ async function editJalur(id, nama, core, odp, pot, teknisi, status) {
 // LOAD ALL
 // =====================
 
-loadPelanggan();
-loadODP();
-loadGangguan();
 loadTeknisi();
 loadJalur();
 
 // =====================
-// ODP WILAYAH - FUNGSI BARU
+// ODP WILAYAH
 // =====================
 
 const wilayahLabels = {
@@ -365,7 +217,6 @@ function showOdpWilayah(wilayah, element) {
   currentWilayah = wilayah;
   loadODPWilayah(wilayah);
 
-  // Reset form listener
   const form = document.getElementById('odpWilayahForm');
   const newForm = form.cloneNode(true);
   form.parentNode.replaceChild(newForm, form);
@@ -429,7 +280,6 @@ window.hapusODPWilayah = async function(id, wilayah) {
   loadODPWilayah(wilayah);
 }
 
-
 // =====================
 // SALAM REALTIME
 // =====================
@@ -452,9 +302,5 @@ function updateSalam() {
   if (el) el.innerText = salam;
 }
 
-// Jalankan saat halaman load
 updateSalam();
-
-// Update otomatis setiap 1 menit
 setInterval(updateSalam, 60000);
-
