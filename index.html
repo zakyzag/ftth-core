@@ -4,40 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard FTTH</title>
-
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
 </head>
 <body>
 <div class="app">
-
-  <!-- SIDEBAR -->
   <div class="sidebar">
-
     <div>
-      <div class="logo">
-        <h2>FTTH.ASRILINK</h2>
-      </div>
-
+      <div class="logo"><h2>FTTH.ASRILINK</h2></div>
       <div class="profile-card">
         <h3>Hai selamat siang</h3>
         <p>Zaky_Achmad</p>
       </div>
-
       <div class="menu">
         <button class="active" onclick="showSection('dashboard', this)">Dashboard</button>
-
-
-        <!-- DATA ODP DROPDOWN -->
         <div class="odp-menu-wrapper">
-          <button class="odp-toggle" onclick="toggleOdpMenu(this)">
-            Data ODP <span class="arrow">▾</span>
-          </button>
+          <button class="odp-toggle" onclick="toggleOdpMenu(this)">Data ODP <span class="arrow">▾</span></button>
           <div class="odp-submenu" id="odpSubmenu">
             <button onclick="showOdpWilayah('tambahrejo', this)">Wilayah Tambahrejo</button>
             <button onclick="showOdpWilayah('pondok', this)">Wilayah Pondok</button>
@@ -61,25 +45,16 @@
             <button onclick="showOdpWilayah('tanjungsari', this)">Wilayah Tanjungsari</button>
           </div>
         </div>
-        <!-- END DATA ODP DROPDOWN -->
-
-
+        <button onclick="showSection('statistik', this)">📊 Statistik ODP</button>
         <button onclick="showSection('teknisi', this)">Teknisi</button>
       </div>
     </div>
-
     <button onclick="logout()" class="logout-btn">Logout</button>
-
   </div>
-  <!-- END SIDEBAR -->
 
-  <!-- MAIN CONTENT -->
   <div class="main">
-
-    <!-- DASHBOARD -->
     <div id="dashboard" class="section active">
       <h1>Dashboard Monitoring Jalur FTTH</h1>
-
       <div class="welcome-box">
         <div>
           <p>👋 Selamat datang kembali</p>
@@ -87,9 +62,7 @@
           <span>Dashboard Monitoring FTTH modern</span>
         </div>
       </div>
-
       <div class="jalur-box">
-
         <form id="jalurForm">
           <input type="text" id="namaJalur" placeholder="Nama Jalur" required>
           <select id="warnaCore">
@@ -114,19 +87,12 @@
           </select>
           <button type="submit">Tambah Jalur</button>
         </form>
-
         <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th>No</th>
-                <th>Nama Jalur</th>
-                <th>Warna Core</th>
-                <th>ODP</th>
-                <th>POT</th>
-                <th>Teknisi</th>
-                <th>Status Jalur</th>
-                <th>Aksi</th>
+                <th>No</th><th>Nama Jalur</th><th>Warna Core</th><th>ODP</th>
+                <th>POT</th><th>Teknisi</th><th>Status Jalur</th><th>Aksi</th>
               </tr>
             </thead>
             <tbody id="jalurTable"></tbody>
@@ -134,149 +100,62 @@
         </div>
       </div>
     </div>
-    <!-- END DASHBOARD -->
 
-    <!-- PELANGGAN -->
-    <div id="pelanggan" class="section">
-      <h1>Data Pelanggan</h1>
-
-      <form id="pelangganForm">
-        <input type="text" id="nama" placeholder="Nama Pelanggan" required>
-        <input type="text" id="alamat" placeholder="Alamat" required>
-        <input type="text" id="paket" placeholder="Paket Internet" required>
-        <button type="submit">Tambah</button>
-      </form>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Nama</th>
-              <th>Alamat</th>
-              <th>Paket</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="pelangganTable"></tbody>
-        </table>
-      </div>
-    </div>
-    <!-- END PELANGGAN -->
-
-    <!-- ODP WILAYAH - satu section dinamis dipakai semua wilayah -->
     <div id="odp-wilayah" class="section">
       <h1 id="odpWilayahTitle">Data ODP</h1>
-
       <form id="odpWilayahForm">
         <input type="text" id="odcOdpW" placeholder="ODC" required>
         <input type="text" id="namaOdpW" placeholder="ODP" required>
+        <select id="kapasitasOdpW" required>
+          <option value="">Kapasitas Port</option>
+          <option value="8">8 Port</option>
+          <option value="16">16 Port</option>
+        </select>
         <input type="number" id="portSisaOdpW" placeholder="Port Sisa" required min="0">
         <input type="text" id="latOdpW" placeholder="Latitude (contoh: -7.123456)" required>
         <input type="text" id="lngOdpW" placeholder="Longitude (contoh: 110.123456)" required>
         <button type="submit">Tambah</button>
       </form>
-
       <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th>ODC</th>
-              <th>ODP</th>
-              <th>Port Sisa</th>
-              <th>Map ODP</th>
-              <th>Aksi</th>
-            </tr>
+            <tr><th>ODC</th><th>ODP</th><th>Kapasitas</th><th>Port Sisa</th><th>Map ODP</th><th>Aksi</th></tr>
           </thead>
           <tbody id="odpWilayahTable"></tbody>
         </table>
       </div>
     </div>
-    <!-- END ODP WILAYAH -->
 
-    <!-- ODP (lama, tetap ada untuk kompatibilitas) -->
-    <div id="odp" class="section">
-      <h1>Data ODP</h1>
-
-      <form id="odpForm">
-        <input type="text" id="namaOdp" placeholder="Nama ODP" required>
-        <input type="text" id="core" placeholder="Core" required>
-        <input type="text" id="status" placeholder="Status" required>
-        <button type="submit">Tambah</button>
-      </form>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ODP</th>
-              <th>Core</th>
-              <th>Status</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="odpTable"></tbody>
-        </table>
+    <div id="statistik" class="section">
+      <h1>📊 Statistik ODP</h1>
+      <div class="statistik-cards" id="statistikCards"></div>
+      <input type="text" id="searchOdp" placeholder="🔍 Cari nama ODP, wilayah, atau ODC..."
+        oninput="filterStatistik()"
+        style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;color:white;font-size:14px;outline:none;margin-bottom:20px;box-sizing:border-box;">
+      <div class="odp-stat-grid" id="odpStatGrid">
+        <p style="color:#94a3b8;text-align:center;">Memuat data...</p>
       </div>
     </div>
-    <!-- END ODP -->
 
-    <!-- GANGGUAN -->
-    <div id="gangguan" class="section">
-      <h1>Data Gangguan</h1>
-
-      <form id="gangguanForm">
-        <input type="text" id="lokasiGangguan" placeholder="Lokasi" required>
-        <input type="text" id="jenisGangguan" placeholder="Jenis Gangguan" required>
-        <button type="submit">Tambah</button>
-      </form>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Lokasi</th>
-              <th>Gangguan</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="gangguanTable"></tbody>
-        </table>
-      </div>
-    </div>
-    <!-- END GANGGUAN -->
-
-    <!-- TEKNISI -->
     <div id="teknisi" class="section">
       <h1>Data Teknisi</h1>
-
       <form id="teknisiForm">
         <input type="text" id="namaTeknisi" placeholder="Nama Teknisi" required>
         <input type="text" id="jobTeknisi" placeholder="Pekerjaan" required>
         <button type="submit">Tambah</button>
       </form>
-
       <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th>Nama</th>
-              <th>Pekerjaan</th>
-              <th>Aksi</th>
-            </tr>
+            <tr><th>Nama</th><th>Pekerjaan</th><th>Aksi</th></tr>
           </thead>
           <tbody id="teknisiTable"></tbody>
         </table>
       </div>
     </div>
-    <!-- END TEKNISI -->
-
   </div>
-  <!-- END MAIN -->
-
 </div>
-
 <script src="firebase.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
-
