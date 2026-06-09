@@ -571,9 +571,18 @@
     appId: "1:412248138112:web:7e8be6884922e183252165",
     measurementId: "G-PVSWC2WHN5"
   };
-  firebase.initializeApp(firebaseConfig);
+
+  // Cegah inisialisasi Firebase ganda
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
   const auth = firebase.auth();
   const db = firebase.firestore();
+
+  // Daftar email yang punya akses admin
+  const ADMIN_EMAILS = [
+    "zaky39415@gmail.com // ← ganti dengan email admin kamu
+  ];
 
   /* ── Login dengan Firebase Auth ── */
   const loginBtn = document.getElementById('loginBtn');
@@ -601,17 +610,20 @@
 
     if (!valid) return;
 
-    // Tampilkan loading
     loginBtn.classList.add('loading');
 
     auth.signInWithEmailAndPassword(emailVal, passVal)
       .then((userCredential) => {
-        // Login berhasil
+        const user = userCredential.user;
+
+        // Tentukan role berdasarkan email
+        const role = ADMIN_EMAILS.includes(user.email.toLowerCase()) ? 'admin' : 'viewer';
+        sessionStorage.setItem('userRole', role);
+
         loginBtn.classList.remove('loading');
-        loginBtn.textContent = '✓ Berhasil Masuk';
+        loginBtn.textContent = '✓ Berhasil Masuk sebagai ' + (role === 'admin' ? 'Admin' : 'Viewer');
         loginBtn.style.background = 'linear-gradient(135deg,#5a9e7a,#3a7a5a)';
 
-        // Arahkan ke halaman utama setelah 1 detik
         setTimeout(() => {
           window.location.href = 'index.html';
         }, 1000);
@@ -619,7 +631,6 @@
       .catch((error) => {
         loginBtn.classList.remove('loading');
 
-        // Tampilkan pesan error sesuai kode
         if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
           emailField.classList.add('has-error');
           passField.classList.add('has-error');
@@ -630,14 +641,17 @@
           emailField.querySelector('.error-msg').textContent = 'Terlalu banyak percobaan. Coba lagi nanti.';
         } else {
           emailField.classList.add('has-error');
-          emailField.querySelector('.error-msg').textContent = 'Terjadi kesalahan. Coba lagi.';
+          emailField.querySelector('.error-msg').textContent = 'Terjadi kesalahan: ' + error.message;
         }
       });
   });
 
-  // Jika sudah login, langsung redirect
+  // Jika sudah login, langsung redirect (tanpa reset role)
   auth.onAuthStateChanged((user) => {
-    if (user) {
+    if (user && !sessionStorage.getItem('userRole')) {
+      // Re-set role jika session hilang tapi masih login
+      const role = ADMIN_EMAILS.includes(user.email.toLowerCase()) ? 'admin' : 'viewer';
+      sessionStorage.setItem('userRole', role);
       window.location.href = 'index.html';
     }
   });
