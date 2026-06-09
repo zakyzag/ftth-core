@@ -1,660 +1,136 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login — Masuk</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin FTTH</title>
 
-    :root {
-      --bg: #080b12;
-      --surface: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.08);
-      --border-focus: rgba(200,170,110,0.6);
-      --gold: #c8aa6e;
-      --gold-light: #e8d5a3;
-      --text: #f0ece4;
-      --muted: rgba(240,236,228,0.45);
-      --error: #e07070;
-    }
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      overflow: hidden;
-    }
+<style>
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  background:#081028;
+  font-family:sans-serif;
+}
 
-    /* ── Background ── */
-    .bg {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(200,170,110,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(100,80,160,0.08) 0%, transparent 60%),
-        var(--bg);
-    }
+.login-box{
+  background:#111c44;
+  padding:30px;
+  border-radius:15px;
+  width:320px;
+}
 
-    /* Subtle grain */
-    .bg::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.4;
-      pointer-events: none;
-    }
+h2{
+  color:white;
+  text-align:center;
+  margin-bottom:20px;
+}
 
-    /* Floating orbs */
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      pointer-events: none;
-      opacity: 0;
-      animation: orbFloat 20s ease-in-out infinite;
-    }
-    .orb1 { width: 400px; height: 400px; top: -10%; left: -5%; background: rgba(200,170,110,0.06); animation-delay: 0s; }
-    .orb2 { width: 300px; height: 300px; bottom: 5%; right: -5%; background: rgba(120,90,200,0.07); animation-delay: -7s; }
-    .orb3 { width: 200px; height: 200px; top: 50%; left: 60%; background: rgba(200,170,110,0.04); animation-delay: -13s; }
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:8px;
+  box-sizing:border-box;
+}
 
-    @keyframes orbFloat {
-      0%   { opacity: 0; transform: translate(0,0) scale(1); }
-      10%  { opacity: 1; }
-      50%  { transform: translate(30px, -20px) scale(1.1); }
-      90%  { opacity: 1; }
-      100% { opacity: 0; transform: translate(0,0) scale(1); }
-    }
+button{
+  width:100%;
+  padding:12px;
+  background:#4f46e5;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:10px;
+}
 
-    /* ── Layout ── */
-    .page {
-      position: relative; z-index: 1;
-      height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
+button:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
 
-    /* Left panel */
-    .brand-panel {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 0 8% 0 10%;
-      animation: fadeUp 1s ease both;
-    }
-
-    .brand-mark {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: clamp(2.8rem, 5vw, 4.2rem);
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-      color: var(--text);
-    }
-    .brand-mark span {
-      display: block;
-      font-size: 0.55em;
-      font-weight: 600;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.5em;
-    }
-
-    .brand-divider {
-      width: 40px;
-      height: 1px;
-      background: linear-gradient(90deg, var(--gold), transparent);
-      margin: 2rem 0;
-    }
-
-    .brand-tagline {
-      font-size: 0.9rem;
-      font-weight: 300;
-      line-height: 1.7;
-      color: var(--muted);
-      max-width: 280px;
-    }
-
-    .deco-line {
-      position: absolute;
-      left: 50%;
-      top: 15%;
-      bottom: 15%;
-      width: 1px;
-      background: linear-gradient(180deg, transparent, var(--border), var(--border), transparent);
-    }
-
-    /* Right panel */
-    .form-panel {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 380px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 3rem 2.5rem;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.02) inset,
-        0 40px 80px -20px rgba(0,0,0,0.6),
-        0 0 60px -20px rgba(200,170,110,0.05);
-      animation: fadeUp 1s 0.2s ease both;
-    }
-
-    .card-header {
-      margin-bottom: 2.2rem;
-    }
-
-    .card-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.9rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.4rem;
-    }
-
-    .card-sub {
-      font-size: 0.8rem;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    /* Welcome message */
-    .welcome-msg {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.6rem;
-      background: rgba(200,170,110,0.06);
-      border: 1px solid rgba(200,170,110,0.15);
-      border-radius: 10px;
-      padding: 0.85rem 1rem;
-      margin-bottom: 1.5rem;
-      animation: fadeUp 0.8s 0.5s ease both;
-    }
-
-    .welcome-wave {
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      animation: wave 1.8s 1s ease-in-out 2;
-      transform-origin: 70% 70%;
-      display: inline-block;
-    }
-
-    @keyframes wave {
-      0%,100% { transform: rotate(0deg); }
-      20%      { transform: rotate(20deg); }
-      40%      { transform: rotate(-10deg); }
-      60%      { transform: rotate(15deg); }
-      80%      { transform: rotate(-5deg); }
-    }
-
-    .welcome-msg p {
-      font-size: 0.8rem;
-      font-weight: 300;
-      color: var(--gold-light);
-      line-height: 1.6;
-    }
-
-    .welcome-msg p em {
-      font-style: normal;
-      color: var(--gold);
-      font-weight: 500;
-    }
-
-    /* Fields */
-    .field {
-      margin-bottom: 1.2rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-      transition: color 0.3s;
-    }
-
-    .input-wrap {
-      position: relative;
-    }
-
-    input {
-      width: 100%;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.85rem 1rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 300;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
-      -webkit-appearance: none;
-    }
-
-    input::placeholder { color: rgba(240,236,228,0.2); }
-
-    input:focus {
-      border-color: var(--border-focus);
-      background: rgba(200,170,110,0.04);
-      box-shadow: 0 0 0 3px rgba(200,170,110,0.07), 0 0 20px -5px rgba(200,170,110,0.15);
-    }
-
-    .field:focus-within label { color: var(--gold); }
-
-    /* Toggle password */
-    .toggle-pw {
-      position: absolute;
-      right: 0.9rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--muted);
-      padding: 4px;
-      display: flex;
-      align-items: center;
-      transition: color 0.2s;
-    }
-    .toggle-pw:hover { color: var(--gold); }
-
-    /* Options row */
-    .options {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.8rem;
-      font-size: 0.78rem;
-    }
-
-    .remember {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      color: var(--muted);
-      user-select: none;
-    }
-
-    .remember input[type=checkbox] {
-      width: 15px; height: 15px;
-      accent-color: var(--gold);
-      border-radius: 3px;
-      cursor: pointer;
-    }
-
-    .forgot {
-      color: var(--gold);
-      text-decoration: none;
-      font-weight: 400;
-      opacity: 0.8;
-      transition: opacity 0.2s;
-    }
-    .forgot:hover { opacity: 1; }
-
-    /* Button */
-    .btn-login {
-      width: 100%;
-      padding: 0.9rem;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #c8aa6e 0%, #a8863e 100%);
-      color: #0d0a04;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.3s;
-      box-shadow: 0 4px 20px -4px rgba(200,170,110,0.35);
-    }
-
-    .btn-login::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .btn-login:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 30px -4px rgba(200,170,110,0.45);
-    }
-    .btn-login:hover::before { opacity: 1; }
-    .btn-login:active { transform: translateY(0); }
-
-    /* Spinner state */
-    .btn-login.loading {
-      pointer-events: none;
-      color: transparent;
-    }
-    .btn-login.loading::after {
-      content: '';
-      position: absolute;
-      width: 18px; height: 18px;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      border: 2px solid rgba(0,0,0,0.3);
-      border-top-color: #0d0a04;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-
-    /* Divider */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 1.5rem 0;
-      color: var(--muted);
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* Social */
-    .socials {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.7rem;
-      margin-bottom: 1.8rem;
-    }
-
-    .btn-social {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.7rem;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      background: rgba(255,255,255,0.02);
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s, background 0.2s;
-    }
-
-    .btn-social:hover {
-      border-color: rgba(255,255,255,0.18);
-      color: var(--text);
-      background: rgba(255,255,255,0.05);
-    }
-
-    .btn-social svg { flex-shrink: 0; }
-
-    /* Footer */
-    .card-footer {
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .card-footer a {
-      color: var(--gold);
-      text-decoration: none;
-      font-weight: 500;
-      transition: opacity 0.2s;
-    }
-    .card-footer a:hover { opacity: 0.75; }
-
-    /* Error message */
-    .error-msg {
-      font-size: 0.75rem;
-      color: var(--error);
-      margin-top: 0.35rem;
-      display: none;
-    }
-    .field.has-error input { border-color: var(--error); }
-    .field.has-error .error-msg { display: block; }
-
-    /* Animations */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Responsive */
-    @media (max-width: 720px) {
-      .page { grid-template-columns: 1fr; }
-      .brand-panel { display: none; }
-      .deco-line { display: none; }
-      .form-panel { padding: 1.5rem; }
-    }
-  </style>
+p{
+  color:#f87171;
+  text-align:center;
+  margin-top:10px;
+  font-size:14px;
+}
+</style>
 </head>
 <body>
 
-<div class="bg"></div>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
+<div class="login-box">
+  <h2>FTTH ADMIN</h2>
 
-<div class="page">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
 
-  <!-- Left: Brand -->
-  <div class="brand-panel">
-    <div class="brand-mark">
-      <span>Platform</span>
-      Selamat<br>Datang.
-    </div>
-    <div class="brand-divider"></div>
-    <p class="brand-tagline">
-      Satu akun untuk semua layananmu. Masuk dan mulai pengalamanmu hari ini.
-    </p>
-  </div>
+  <button onclick="login()" id="loginBtn">Login</button>
 
-  <div class="deco-line"></div>
-
-  <!-- Right: Form -->
-  <div class="form-panel">
-    <div class="card">
-
-      <div class="card-header">
-        <h1 class="card-title">Masuk</h1>
-        <p class="card-sub">Masukkan kredensial akunmu</p>
-      </div>
-
-      <div class="welcome-msg">
-        <span class="welcome-wave">👋</span>
-        <p>Hai, selamat datang! Silakan masukkan <em>username</em> dan <em>password</em> kamu untuk melanjutkan.</p>
-      </div>
-
-      <!-- Social login -->
-      <div class="socials">
-        <button class="btn-social" type="button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Google
-        </button>
-        <button class="btn-social" type="button">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          GitHub
-        </button>
-      </div>
-
-      <div class="divider">atau dengan email</div>
-
-      <div class="field" id="field-email">
-        <label for="email">Email</label>
-        <div class="input-wrap">
-          <input type="email" id="email" placeholder="nama@email.com" autocomplete="email"/>
-        </div>
-        <span class="error-msg">Email tidak valid.</span>
-      </div>
-
-      <div class="field" id="field-password">
-        <label for="password">Kata Sandi</label>
-        <div class="input-wrap">
-          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
-          <button class="toggle-pw" type="button" id="togglePw" aria-label="Tampilkan kata sandi">
-            <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <span class="error-msg">Kata sandi tidak boleh kosong.</span>
-      </div>
-
-      <div class="options">
-        <label class="remember">
-          <input type="checkbox" id="remember"/> Ingat saya
-        </label>
-        <a href="#" class="forgot">Lupa sandi?</a>
-      </div>
-
-      <button class="btn-login" id="loginBtn" type="button">Masuk</button>
-
-      <div class="card-footer" style="margin-top:1.5rem;">
-        Belum punya akun? <a href="#">Daftar sekarang</a>
-      </div>
-
-    </div>
-  </div>
-
+  <p id="status"></p>
 </div>
 
 <script>
-  /* Toggle password visibility */
-  const pwInput = document.getElementById('password');
-  const toggleBtn = document.getElementById('togglePw');
-  const eyeIcon = document.getElementById('eyeIcon');
+const firebaseConfig = {
+  apiKey: "AIzaSyA3TToQTNLjLUwXGNktHri1U--EgUwP1u0",
+  authDomain: "asrlink-fiber.firebaseapp.com",
+  projectId: "asrlink-fiber",
+  storageBucket: "asrlink-fiber.firebasestorage.app",
+  messagingSenderId: "412248138112",
+  appId: "1:412248138112:web:7e8be6884922e183252165",
+  measurementId: "G-PVSWC2WHN5"
+};
 
-  const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-  const eyeClosed = `<line x1="1" y1="1" x2="23" y2="23"/><path d="M10.73 5.08A10.43 10.43 0 0112 5c7 0 11 7 11 7a13.16 13.16 0 01-1.67 2.68M6.61 6.61A13.526 13.526 0 002 12s4 7 10 7a9.74 9.74 0 005.39-1.61"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  toggleBtn.addEventListener('click', () => {
-    const isHidden = pwInput.type === 'password';
-    pwInput.type = isHidden ? 'text' : 'password';
-    eyeIcon.innerHTML = isHidden ? eyeClosed : eyeOpen;
-  });
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const btn = document.getElementById("loginBtn");
+  const status = document.getElementById("status");
 
-  /* ── Firebase Config ── */
-  const firebaseConfig = {
-    apiKey: "AIzaSyA3TToQTNLjLUwXGNktHri1U--EgUwP1u0",
-    authDomain: "asrlink-fiber.firebaseapp.com",
-    projectId: "asrlink-fiber",
-    storageBucket: "asrlink-fiber.firebasestorage.app",
-    messagingSenderId: "412248138112",
-    appId: "1:412248138112:web:7e8be6884922e183252165",
-    measurementId: "G-PVSWC2WHN5"
-  };
-
-  // Cegah inisialisasi Firebase ganda
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  if (!email || !password) {
+    status.innerText = "Email dan password wajib diisi.";
+    return;
   }
-  const auth = firebase.auth();
-  const db = firebase.firestore();
 
-  // Daftar email yang punya akses admin
-  const ADMIN_EMAILS = [
-    "admin@acses.my.id" // ← ganti dengan email admin kamu
-  ];
+  btn.disabled = true;
+  btn.innerText = "Memuat...";
+  status.innerText = "";
 
-  /* ── Login dengan Firebase Auth ── */
-  const loginBtn = document.getElementById('loginBtn');
-  const emailField = document.getElementById('field-email');
-  const passField = document.getElementById('field-password');
-  const emailInput = document.getElementById('email');
+  try {
+    const userCred = await firebase.auth().signInWithEmailAndPassword(email, password);
+    const uid = userCred.user.uid;
 
-  loginBtn.addEventListener('click', () => {
-    let valid = true;
+    // Cek role di Firestore
+    const doc = await db.collection("users").doc(uid).get();
 
-    emailField.classList.remove('has-error');
-    passField.classList.remove('has-error');
-
-    const emailVal = emailInput.value.trim();
-    const passVal = pwInput.value;
-
-    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-      emailField.classList.add('has-error');
-      valid = false;
-    }
-    if (!passVal) {
-      passField.classList.add('has-error');
-      valid = false;
+    if (doc.exists) {
+      const role = doc.data().role;
+      // Simpan role di sessionStorage supaya bisa dibaca di index.html
+      sessionStorage.setItem("userRole", role);
+    } else {
+      // Kalau tidak ada di koleksi users, anggap viewer
+      sessionStorage.setItem("userRole", "viewer");
     }
 
-    if (!valid) return;
+    window.location.href = "index.html";
 
-    loginBtn.classList.add('loading');
-
-    auth.signInWithEmailAndPassword(emailVal, passVal)
-      .then((userCredential) => {
-        const user = userCredential.user;
-
-        // Tentukan role berdasarkan email
-        const role = ADMIN_EMAILS.includes(user.email.toLowerCase()) ? 'admin' : 'viewer';
-        sessionStorage.setItem('userRole', role);
-
-        loginBtn.classList.remove('loading');
-        loginBtn.textContent = '✓ Berhasil Masuk sebagai ' + (role === 'admin' ? 'Admin' : 'Viewer');
-        loginBtn.style.background = 'linear-gradient(135deg,#5a9e7a,#3a7a5a)';
-
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1000);
-      })
-      .catch((error) => {
-        loginBtn.classList.remove('loading');
-
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-          emailField.classList.add('has-error');
-          passField.classList.add('has-error');
-          emailField.querySelector('.error-msg').textContent = 'Email atau password salah.';
-          passField.querySelector('.error-msg').textContent = 'Periksa kembali password kamu.';
-        } else if (error.code === 'auth/too-many-requests') {
-          emailField.classList.add('has-error');
-          emailField.querySelector('.error-msg').textContent = 'Terlalu banyak percobaan. Coba lagi nanti.';
-        } else {
-          emailField.classList.add('has-error');
-          emailField.querySelector('.error-msg').textContent = 'Terjadi kesalahan: ' + error.message;
-        }
-      });
-  });
-
-  // Jika sudah login, langsung redirect (tanpa reset role)
-  auth.onAuthStateChanged((user) => {
-    if (user && !sessionStorage.getItem('userRole')) {
-      // Re-set role jika session hilang tapi masih login
-      const role = ADMIN_EMAILS.includes(user.email.toLowerCase()) ? 'admin' : 'viewer';
-      sessionStorage.setItem('userRole', role);
-      window.location.href = 'index.html';
-    }
-  });
+  } catch (error) {
+    status.innerText = "Email atau password salah.";
+    btn.disabled = false;
+    btn.innerText = "Login";
+  }
+}
 </script>
 
 </body>
