@@ -217,9 +217,19 @@
     color: #374151;
     font-size: 11px;
   }
+  .fade-overlay {
+    position: fixed;
+    inset: 0;
+    background: #060d1f;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+    z-index: 999;
+  }
 </style>
 </head>
 <body>
+<div id="fadeOverlay" class="fade-overlay"></div>
 
 <div class="card">
   <div class="logo-area">
@@ -307,7 +317,12 @@
       status.className = 'status success';
       status.innerText = 'Login berhasil! Mengalihkan...';
 
-      setTimeout(() => { window.location.href = "index.html"; }, 800);
+      // Fade out animation
+      setTimeout(() => {
+        const overlay = document.getElementById('fadeOverlay');
+        overlay.style.opacity = '1';
+        setTimeout(() => { window.location.href = "index.html"; }, 800);
+      }, 600);
 
     } catch (error) {
       console.log("Firebase error code:", error.code);
