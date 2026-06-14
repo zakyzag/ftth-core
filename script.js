@@ -355,7 +355,7 @@ let modeGambarGaris = false;
 let titikGarisSementara = null;
 let odpMarkers = [];
 
-const MAPBOX_TOKEN =pk.eyJ1IjoiemFreWFjaG1hZCIsImEiOiJjbXB2eDYwb2owOHhoMnByMDF1dWU0NjN4In0.DEpgaLu9nUYe_AvP2XcC2w
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiemFreWFjaG1hZCIsImEiOiJjbXB2eDYwb2owOHhoMnByMDF1dWU0NjN4In0.DEpgaLu9nUYe_AvP2XcC2w';
 
 async function loadPeta() {
   if (petaMap) {
