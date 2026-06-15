@@ -368,7 +368,7 @@ async function loadPeta() {
 
   petaMap = new mapboxgl.Map({
     container: 'mapOdp',
-    style: 'mapbox://styles/mapbox/satellite-streets-v12',
+    style: 'mapbox://styles/mapbox/streets-v12',
     center: [110.4, -7.0],
     zoom: 14,
     pitch: 55,
