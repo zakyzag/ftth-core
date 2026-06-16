@@ -348,14 +348,59 @@ function renderStatistik(data) {
 }
 
 // =====================
-// PETA ODP 3D - MAPBOX
+// PETA ODP - MAPBOX SATELLITE
 // =====================
 let petaMap = null;
 let modeGambarGaris = false;
 let titikGarisSementara = null;
+let titikAwalMarker = null;
 let odpMarkers = [];
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiemFreWFjaG1hZCIsImEiOiJjbXB2eDYwb2owOHhoMnByMDF1dWU0NjN4In0.DEpgaLu9nUYe_AvP2XcC2w';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiemFreWFjaG1hZCIsImEiOiJjbXB2dnRmdTMwMzRiMnJvanRnM2JqZjM1In0.M3lIZVBMvmh-xuVvfsjncQ';
+
+// SVG Icons
+const ODP_ICON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="42" viewBox="0 0 36 42">
+  <rect x="0" y="0" width="36" height="32" rx="6" fill="#16a34a" stroke="white" stroke-width="2"/>
+  <rect x="4" y="4" width="28" height="24" rx="4" fill="#15803d"/>
+  <rect x="7" y="7" width="8" height="18" rx="2" fill="white" opacity="0.9"/>
+  <rect x="17" y="7" width="8" height="18" rx="2" fill="white" opacity="0.9"/>
+  <rect x="8" y="9" width="2" height="2" rx="1" fill="#16a34a"/>
+  <rect x="8" y="13" width="2" height="2" rx="1" fill="#16a34a"/>
+  <rect x="8" y="17" width="2" height="2" rx="1" fill="#16a34a"/>
+  <rect x="18" y="9" width="2" height="2" rx="1" fill="#16a34a"/>
+  <rect x="18" y="13" width="2" height="2" rx="1" fill="#16a34a"/>
+  <rect x="18" y="17" width="2" height="2" rx="1" fill="#16a34a"/>
+  <polygon points="18,32 14,38 22,38" fill="#16a34a" stroke="white" stroke-width="1"/>
+</svg>`;
+
+const ODC_ICON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="50" viewBox="0 0 44 50">
+  <rect x="0" y="0" width="44" height="38" rx="6" fill="#1d4ed8" stroke="white" stroke-width="2"/>
+  <rect x="4" y="4" width="36" height="30" rx="4" fill="#1e40af"/>
+  <rect x="7" y="7" width="10" height="24" rx="2" fill="white" opacity="0.9"/>
+  <rect x="19" y="7" width="10" height="24" rx="2" fill="white" opacity="0.9"/>
+  <rect x="8" y="9" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="8" y="13" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="8" y="17" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="8" y="21" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="20" y="9" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="20" y="13" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="20" y="17" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <rect x="20" y="21" width="2" height="2" rx="1" fill="#1d4ed8"/>
+  <polygon points="22,38 18,46 26,46" fill="#1d4ed8" stroke="white" stroke-width="1"/>
+</svg>`;
+
+const RUMAH_ICON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <circle cx="14" cy="14" r="13" fill="white" stroke="#94a3b8" stroke-width="1.5"/>
+  <polygon points="14,5 4,14 6,14 6,22 22,22 22,14 24,14" fill="#64748b" stroke="#475569" stroke-width="1"/>
+  <rect x="11" y="16" width="6" height="6" fill="white"/>
+</svg>`;
+
+function svgToDataUrl(svg) {
+  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
 
 async function loadPeta() {
   if (petaMap) {
@@ -368,11 +413,11 @@ async function loadPeta() {
 
   petaMap = new mapboxgl.Map({
     container: 'mapOdp',
-    style: 'mapbox://styles/mapbox/streets-v12',
+    style: 'mapbox://styles/mapbox/satellite-streets-v12',
     center: [110.4, -7.0],
-    zoom: 14,
-    pitch: 55,
-    bearing: -20,
+    zoom: 15,
+    pitch: 0,
+    bearing: 0,
     antialias: true
   });
 
@@ -380,39 +425,47 @@ async function loadPeta() {
   petaMap.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
   petaMap.on('load', async () => {
-    petaMap.addLayer({
-      id: '3d-buildings',
-      source: 'composite',
-      'source-layer': 'building',
-      filter: ['==', 'extrude', 'true'],
-      type: 'fill-extrusion',
-      minzoom: 15,
-      paint: {
-        'fill-extrusion-color': '#0a2a1a',
-        'fill-extrusion-height': ['get', 'height'],
-        'fill-extrusion-base': ['get', 'min_height'],
-        'fill-extrusion-opacity': 0.7
-      }
-    });
+    // Load custom icons
+    await loadMapIcons();
 
+    // Source garis jalur
     petaMap.addSource('garis-jalur', {
       type: 'geojson',
       data: { type: 'FeatureCollection', features: [] }
     });
 
+    // Garis jalur - shadow
+    petaMap.addLayer({
+      id: 'garis-jalur-shadow',
+      type: 'line',
+      source: 'garis-jalur',
+      paint: {
+        'line-color': '#000000',
+        'line-width': 5,
+        'line-opacity': 0.3,
+        'line-blur': 3
+      }
+    });
+
+    // Garis jalur - main
     petaMap.addLayer({
       id: 'garis-jalur-layer',
       type: 'line',
       source: 'garis-jalur',
-      paint: { 'line-color': ['get', 'warna'], 'line-width': 3, 'line-opacity': 0.9 }
+      paint: {
+        'line-color': ['get', 'warna'],
+        'line-width': 2.5,
+        'line-opacity': 0.95
+      }
     });
 
+    // Klik garis jalur
     petaMap.on('click', 'garis-jalur-layer', (e) => {
       const props = e.features[0].properties;
       new mapboxgl.Popup({ className: 'odp-popup' })
         .setLngLat(e.lngLat)
         .setHTML(`
-          <div style="background:#0a1628;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;font-family:'Poppins',sans-serif;color:white;min-width:160px;">
+          <div style="background:#0a1628;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;font-family:sans-serif;color:white;min-width:160px;">
             <div style="font-weight:700;font-size:13px;color:${props.warna};margin-bottom:10px">〰️ ${props.nama}</div>
             <button onclick="hapusGaris('${props.id}')" style="width:100%;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff6666;padding:6px;border-radius:6px;cursor:pointer;font-size:11px;">🗑️ Hapus Garis</button>
           </div>`)
@@ -422,6 +475,7 @@ async function loadPeta() {
     petaMap.on('mouseenter', 'garis-jalur-layer', () => petaMap.getCanvas().style.cursor = 'pointer');
     petaMap.on('mouseleave', 'garis-jalur-layer', () => petaMap.getCanvas().style.cursor = '');
 
+    // Klik peta
     petaMap.on('click', (e) => {
       const features = petaMap.queryRenderedFeatures(e.point, { layers: ['garis-jalur-layer'] });
       if (features.length > 0) return;
@@ -435,14 +489,32 @@ async function loadPeta() {
   setTimeout(() => petaMap.resize(), 300);
 }
 
+async function loadMapIcons() {
+  const icons = [
+    { id: 'odp-icon', svg: ODP_ICON_SVG },
+    { id: 'odc-icon', svg: ODC_ICON_SVG },
+    { id: 'rumah-icon', svg: RUMAH_ICON_SVG }
+  ];
+
+  for (const icon of icons) {
+    if (petaMap.hasImage(icon.id)) continue;
+    await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => { petaMap.addImage(icon.id, img); resolve(); };
+      img.src = svgToDataUrl(icon.svg);
+    });
+  }
+}
+
 async function refreshPetaData() {
   await loadMarkersFromFirebase();
   await loadGarisFromFirebase();
 }
 
 function tampilFormTambahODP(lnglat) {
+  if (userRole === 'viewer') return;
   const formHtml = `
-    <div style="background:#0a1628;border:1px solid rgba(0,255,136,0.3);border-radius:10px;padding:16px;min-width:220px;font-family:'Poppins',sans-serif;color:white;">
+    <div style="background:#0a1628;border:1px solid rgba(0,255,136,0.3);border-radius:10px;padding:16px;min-width:220px;font-family:sans-serif;color:white;">
       <div style="font-weight:700;font-size:13px;color:#00ff88;margin-bottom:12px">📍 Tambah ODP</div>
       <input id="popupOdc" type="text" placeholder="ODC" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;box-sizing:border-box;outline:none;">
       <input id="popupNama" type="text" placeholder="Nama ODP" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;box-sizing:border-box;outline:none;">
@@ -478,10 +550,13 @@ window.simpanODPDariPeta = async function(lng, lat) {
 }
 
 async function loadMarkersFromFirebase() {
+  // Hapus marker lama
   odpMarkers.forEach(m => m.remove());
   odpMarkers = [];
+
   const bounds = new mapboxgl.LngLatBounds();
   let hasData = false;
+  const odcSet = {};
 
   for (const wilayah of Object.keys(wilayahLabels)) {
     const snapshot = await db.collection('odp_' + wilayah).get();
@@ -498,16 +573,27 @@ async function loadMarkersFromFirebase() {
       let warna = persen===100?'#ef4444':persen>=75?'#f97316':persen===0?'#6b7280':'#22c55e';
       let status = persen===100?'PENUH':persen>=75?'HAMPIR PENUH':persen===0?'KOSONG':'TERSEDIA';
 
+      // ODP Marker dengan ikon hijau
       const el = document.createElement('div');
-      el.style.cssText = `width:16px;height:16px;background:${warna};border:2px solid white;border-radius:50%;box-shadow:0 0 12px ${warna},0 0 24px ${warna}80;cursor:pointer;transition:transform 0.2s;`;
-      el.onmouseover = () => el.style.transform = 'scale(1.4)';
-      el.onmouseout = () => el.style.transform = 'scale(1)';
+      el.style.cssText = 'cursor:pointer;';
+      el.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="background:#16a34a;border:2px solid white;border-radius:6px;padding:3px 6px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="1" width="5" height="12" rx="1" fill="white" opacity="0.9"/>
+              <rect x="8" y="1" width="5" height="12" rx="1" fill="white" opacity="0.9"/>
+            </svg>
+            <span style="color:white;font-size:10px;font-weight:700;font-family:sans-serif;">${d.nama||'ODP'}</span>
+          </div>
+          <div style="width:2px;height:6px;background:#16a34a;"></div>
+          <div style="width:8px;height:8px;background:${warna};border:2px solid white;border-radius:50%;box-shadow:0 0 8px ${warna};"></div>
+        </div>`;
 
-      const popup = new mapboxgl.Popup({ className: 'odp-popup', offset: 12, maxWidth: '260px' })
+      const popup = new mapboxgl.Popup({ className: 'odp-popup', offset: 20, maxWidth: '260px' })
         .setHTML(`
-          <div style="background:#0a1628;border:1px solid ${warna}60;border-radius:10px;padding:14px;font-family:'Poppins',sans-serif;color:white;min-width:200px;">
+          <div style="background:#0a1628;border:1px solid ${warna}60;border-radius:10px;padding:14px;font-family:sans-serif;color:white;min-width:200px;">
             <div style="font-weight:700;font-size:14px;color:${warna};margin-bottom:4px">${d.nama}</div>
-            <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">📍 Wilayah ${wilayahLabels[wilayah]}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:10px">📍 Wilayah ${wilayahLabels[wilayah]} | ODC: ${d.odc||'-'}</div>
             <div style="display:flex;justify-content:space-around;margin-bottom:8px">
               <div style="text-align:center"><div style="font-size:20px;font-weight:700">${kapasitas}</div><div style="font-size:10px;color:#94a3b8">Total</div></div>
               <div style="text-align:center"><div style="font-size:20px;font-weight:700;color:#f97316">${terpakai}</div><div style="font-size:10px;color:#94a3b8">Terpakai</div></div>
@@ -517,17 +603,43 @@ async function loadMarkersFromFirebase() {
               <div style="width:${persen}%;height:100%;background:${warna};border-radius:999px"></div>
             </div>
             <div style="background:${warna}20;color:${warna};font-size:11px;font-weight:700;text-align:center;padding:4px;border-radius:6px;border:1px solid ${warna}40;margin-bottom:8px">${status} · ${persen}%</div>
-            <button onclick="hapusODPDariPeta('${doc.id}','${wilayah}')" style="width:100%;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff6666;padding:6px;border-radius:6px;cursor:pointer;font-size:11px;">🗑️ Hapus ODP</button>
+            ${userRole !== 'viewer' ? `<button onclick="hapusODPDariPeta('${doc.id}','${wilayah}')" style="width:100%;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff6666;padding:6px;border-radius:6px;cursor:pointer;font-size:11px;">🗑️ Hapus ODP</button>` : ''}
           </div>`);
 
       const marker = new mapboxgl.Marker(el).setLngLat([lng, lat]).setPopup(popup).addTo(petaMap);
       odpMarkers.push(marker);
       bounds.extend([lng, lat]);
       hasData = true;
+
+      // Kumpulkan ODC unik
+      if (d.odc && !odcSet[d.odc]) {
+        odcSet[d.odc] = { lat, lng, nama: d.odc };
+      }
     });
   }
 
-  if (hasData) petaMap.fitBounds(bounds, { padding: 60, pitch: 55, duration: 1500 });
+  // Tambah marker ODC (biru)
+  for (const odc of Object.values(odcSet)) {
+    const el = document.createElement('div');
+    el.style.cssText = 'cursor:pointer;';
+    el.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="background:#1d4ed8;border:2px solid white;border-radius:6px;padding:3px 8px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.5);">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="1" y="1" width="5" height="12" rx="1" fill="white" opacity="0.9"/>
+            <rect x="8" y="1" width="5" height="12" rx="1" fill="white" opacity="0.9"/>
+          </svg>
+          <span style="color:white;font-size:11px;font-weight:700;font-family:sans-serif;">${odc.nama}</span>
+        </div>
+        <div style="width:2px;height:6px;background:#1d4ed8;"></div>
+        <div style="width:10px;height:10px;background:#1d4ed8;border:2px solid white;border-radius:50%;box-shadow:0 0 10px #1d4ed8;"></div>
+      </div>`;
+
+    const odcMarker = new mapboxgl.Marker(el).setLngLat([odc.lng - 0.0003, odc.lat]).addTo(petaMap);
+    odpMarkers.push(odcMarker);
+  }
+
+  if (hasData) petaMap.fitBounds(bounds, { padding: 80, pitch: 0, duration: 1500, maxZoom: 16 });
 }
 
 window.hapusODPDariPeta = async function(id, wilayah) {
@@ -554,6 +666,7 @@ function toggleModeGaris() {
     btn.innerText = '〰️ Gambar Garis Jalur';
     petaMap.getCanvas().style.cursor = '';
     titikGarisSementara = null;
+    if (titikAwalMarker) { titikAwalMarker.remove(); titikAwalMarker = null; }
   }
 }
 
@@ -561,22 +674,22 @@ function handleKlikGaris(lnglat) {
   if (!titikGarisSementara) {
     titikGarisSementara = lnglat;
     const el = document.createElement('div');
-    el.style.cssText = 'width:12px;height:12px;background:#00ff88;border:2px solid white;border-radius:50%;box-shadow:0 0 10px #00ff88;';
-    el.id = 'titikAwalTemp';
-    new mapboxgl.Marker(el).setLngLat(lnglat).addTo(petaMap);
+    el.style.cssText = 'width:14px;height:14px;background:#00ff88;border:2px solid white;border-radius:50%;box-shadow:0 0 10px #00ff88;';
+    titikAwalMarker = new mapboxgl.Marker(el).setLngLat(lnglat).addTo(petaMap);
   } else {
     const titikAkhir = lnglat;
     const titikAwal = titikGarisSementara;
-    document.getElementById('titikAwalTemp')?.parentElement?.remove();
+    if (titikAwalMarker) { titikAwalMarker.remove(); titikAwalMarker = null; }
 
     const formHtml = `
-      <div style="background:#0a1628;border:1px solid rgba(0,255,136,0.3);border-radius:10px;padding:16px;min-width:220px;font-family:'Poppins',sans-serif;color:white;">
+      <div style="background:#0a1628;border:1px solid rgba(0,255,136,0.3);border-radius:10px;padding:16px;min-width:220px;font-family:sans-serif;color:white;">
         <div style="font-weight:700;font-size:13px;color:#00ff88;margin-bottom:12px">〰️ Simpan Garis Jalur</div>
         <input id="namaGaris" type="text" placeholder="Nama Jalur" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;box-sizing:border-box;outline:none;">
         <select id="warnaGaris" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);color:white;padding:8px 10px;border-radius:6px;margin-bottom:12px;font-size:12px;box-sizing:border-box;outline:none;">
-          <option value="#00ff88">Hijau</option>
           <option value="#3b82f6">Biru</option>
           <option value="#f97316">Orange</option>
+          <option value="#a855f7">Ungu</option>
+          <option value="#00ff88">Hijau</option>
           <option value="#ef4444">Merah</option>
           <option value="#facc15">Kuning</option>
           <option value="#ffffff">Putih</option>
@@ -604,7 +717,7 @@ window.simpanGaris = async function(lng1, lat1, lng2, lat2) {
 }
 
 window.batalGaris = function() {
-  document.getElementById('titikAwalTemp')?.parentElement?.remove();
+  if (titikAwalMarker) { titikAwalMarker.remove(); titikAwalMarker = null; }
   titikGarisSementara = null;
   document.querySelectorAll('.mapboxgl-popup').forEach(p => p.remove());
 }
@@ -618,7 +731,7 @@ async function loadGarisFromFirebase() {
     if (isNaN(lat1)||isNaN(lng1)||isNaN(lat2)||isNaN(lng2)) return;
     features.push({
       type: 'Feature',
-      properties: { id: doc.id, nama: d.nama, warna: d.warna||'#00ff88' },
+      properties: { id: doc.id, nama: d.nama, warna: d.warna||'#3b82f6' },
       geometry: { type: 'LineString', coordinates: [[lng1,lat1],[lng2,lat2]] }
     });
   });
@@ -633,6 +746,8 @@ window.hapusGaris = async function(id) {
   document.querySelectorAll('.mapboxgl-popup').forEach(p => p.remove());
   await loadGarisFromFirebase();
 }
+
+
 
 // =====================
 // SALAM REALTIME
