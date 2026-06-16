@@ -3,6 +3,29 @@
 // =====================
 const userRole = sessionStorage.getItem("userRole") || "viewer";
 
+// =====================
+// AUTO LOGOUT 15 MENIT
+// =====================
+let autoLogoutTimer;
+
+function resetAutoLogout() {
+  clearTimeout(autoLogoutTimer);
+  autoLogoutTimer = setTimeout(() => {
+    firebase.auth().signOut().then(() => {
+      alert('Sesi berakhir karena tidak aktif 15 menit. Silakan login kembali.');
+      window.location.href = 'login.html';
+    });
+  }, 15 * 60 * 1000); // 15 menit
+}
+
+// Reset timer setiap ada aktivitas
+['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+  document.addEventListener(event, resetAutoLogout);
+});
+
+// Mulai timer saat halaman dibuka
+resetAutoLogout();
+
 function applyRoleAccess() {
   if (userRole === "viewer") {
     document.querySelectorAll("form").forEach(form => form.style.display = "none");
